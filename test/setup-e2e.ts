@@ -26,18 +26,12 @@ process.env.OTEL_ENABLED = 'false';
 jest.setTimeout(30000);
 
 // Suppress console output during e2e tests
-const originalConsole = global.console;
+const originalConsoleE2E = global.console;
 global.console = {
-  ...originalConsole,
+  ...originalConsoleE2E,
   log: jest.fn(),
   debug: jest.fn(),
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
 };
-
-// Global teardown
-afterAll(async () => {
-  // Allow time for cleanup
-  await new Promise((resolve) => setTimeout(resolve, 500));
-});

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
 /**
@@ -135,10 +135,7 @@ describe('Health Controller (e2e)', () => {
         .get('/health/ready')
         .expect(200)
         .expect((res) => {
-          if (
-            res.body.checks.database &&
-            res.body.checks.constitutional
-          ) {
+          if (res.body.checks.database && res.body.checks.constitutional) {
             expect(res.body.ready).toBe(true);
           }
         });
@@ -174,9 +171,7 @@ describe('Health Controller (e2e)', () => {
 
   describe('Response Format', () => {
     it('should return JSON content type', () => {
-      return request(app.getHttpServer())
-        .get('/health')
-        .expect('Content-Type', /json/);
+      return request(app.getHttpServer()).get('/health').expect('Content-Type', /json/);
     });
 
     it('should include proper HTTP status codes', () => {
@@ -186,9 +181,7 @@ describe('Health Controller (e2e)', () => {
 
   describe('Error Handling', () => {
     it('should handle invalid routes gracefully', () => {
-      return request(app.getHttpServer())
-        .get('/health/invalid')
-        .expect(404);
+      return request(app.getHttpServer()).get('/health/invalid').expect(404);
     });
 
     it('should not expose sensitive information in errors', () => {

@@ -14,6 +14,10 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(uuid)/)',
+  ],
+  setupFiles: ['<rootDir>/test/setup-e2e.ts'],
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

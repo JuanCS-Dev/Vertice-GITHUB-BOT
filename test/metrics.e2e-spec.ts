@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
 /**
@@ -98,9 +98,7 @@ describe('Metrics Controller (e2e)', () => {
         .expect(200)
         .expect((res) => {
           const lines = res.text.split('\n');
-          const metricLines = lines.filter(
-            (line) => line && !line.startsWith('#'),
-          );
+          const metricLines = lines.filter((line) => line && !line.startsWith('#'));
           expect(metricLines.length).toBeGreaterThan(0);
         });
     });
@@ -167,9 +165,7 @@ describe('Metrics Controller (e2e)', () => {
       await request(app.getHttpServer()).get('/health');
       await request(app.getHttpServer()).get('/health');
 
-      const response = await request(app.getHttpServer())
-        .get('/metrics/summary')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/metrics/summary').expect(200);
 
       expect(response.body.http.totalRequests).toBeGreaterThanOrEqual(2);
     });
@@ -178,9 +174,7 @@ describe('Metrics Controller (e2e)', () => {
       await request(app.getHttpServer()).get('/health');
       await request(app.getHttpServer()).get('/nonexistent').expect(404);
 
-      const response = await request(app.getHttpServer())
-        .get('/metrics/summary')
-        .expect(200);
+      const response = await request(app.getHttpServer()).get('/metrics/summary').expect(200);
 
       expect(response.body.http.totalRequests).toBeGreaterThanOrEqual(2);
       expect(response.body.http.totalErrors).toBeGreaterThanOrEqual(1);
@@ -221,9 +215,7 @@ describe('Metrics Controller (e2e)', () => {
 
       await request(app.getHttpServer()).get('/metrics/summary');
 
-      const finalResponse = await request(app.getHttpServer())
-        .get('/metrics/summary')
-        .expect(200);
+      const finalResponse = await request(app.getHttpServer()).get('/metrics/summary').expect(200);
 
       const increment = finalResponse.body.http.totalRequests - initialCount;
       expect(increment).toBeGreaterThanOrEqual(1);
@@ -248,9 +240,7 @@ describe('Metrics Controller (e2e)', () => {
 
   describe('Error Handling', () => {
     it('should handle invalid routes gracefully', () => {
-      return request(app.getHttpServer())
-        .get('/metrics/invalid')
-        .expect(404);
+      return request(app.getHttpServer()).get('/metrics/invalid').expect(404);
     });
 
     it('should not expose sensitive information in errors', () => {

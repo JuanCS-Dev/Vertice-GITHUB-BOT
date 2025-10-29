@@ -23,7 +23,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./jest-e2e.config.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
@@ -37,7 +37,7 @@
     "constitutional:audit": "pnpm lei:check && pnpm crs:check && pnpm test:cov",
     "docker:dev": "docker-compose up --build",
     "docker:down": "docker-compose down -v",
-    "prepare": "husky install"
+    "prepare": "node -e \"try { require('husky').install() } catch (e) {}\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.17.0",
@@ -65,7 +65,7 @@
     "nest-winston": "^1.10.2",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
-    "uuid": "^13.0.0",
+    "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1"
   },
@@ -78,7 +78,7 @@
     "@types/jest": "^29.5.11",
     "@types/node": "^20.10.6",
     "@types/supertest": "^6.0.3",
-    "@types/uuid": "^11.0.0",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
     "eslint": "^8.56.0",
