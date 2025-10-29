@@ -22,7 +22,8 @@
 - 🏗️ [Architecture](./ARCHITECTURE.md) - System design and components
 - 🤝 [Contributing](./CONTRIBUTING.md) - How to contribute
 - 📜 [Constituição Vértice](./CONSTITUICAO.md) - Constitutional principles
-- 🚀 [Implementation Plan](./IMPLEMENTATION_PLAN.md) - Development roadmap
+- ☁️ [Deploy to Oracle Cloud](./DEPLOY_ORACLE_CLOUD.md) - Production deployment guide
+- 📋 [Constitutional Audit](./CONSTITUTIONAL_AUDIT.md) - Final compliance report
 
 ## Project Vision & Mission
 
