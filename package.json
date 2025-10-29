@@ -31,7 +31,7 @@
     "prisma:studio": "prisma studio",
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset --force",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --project tsconfig.build.json --noEmit",
     "lei:check": "ts-node scripts/lei-checker.ts",
     "crs:check": "ts-node scripts/crs-checker.ts",
     "constitutional:audit": "pnpm lei:check && pnpm crs:check && pnpm test:cov",
