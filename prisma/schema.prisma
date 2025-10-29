@@ -1,0 +1,227 @@
+// Vértice GitHub Bot - Database Schema
+// Constitutional Compliance: Complete implementation with zero placeholders
+// DETER-AGENT Framework integration for state management
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core webhook delivery tracking with constitutional metrics
+model WebhookDelivery {
+  id               String    @id @default(cuid())
+  gitHubDeliveryId String    @unique
+  eventType        String    // e.g., "issues", "pull_request", "push"
+  action           String?   // e.g., "opened", "closed", "synchronize"
+  payload          Json      // Full GitHub webhook payload
+  signature        String    // HMAC-SHA256 signature for validation
+  verified         Boolean   @default(false)
+  processedAt      DateTime?
+  errorMessage     String?   @db.Text
+
+  // Constitutional Metrics
+  constitutionalCRS Float @default(95.0) // Constitutional Rule Satisfaction
+  lazyExecutionIndex Float @default(0.0) // LEI score for processing
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventType, createdAt])
+  @@index([verified, processedAt])
+  @@map("webhook_deliveries")
+}
+
+// Repository configuration and state
+model Repository {
+  id         String    @id @default(cuid())
+  owner      String    // GitHub organization or user
+  name       String    // Repository name
+  fullName   String    @unique // "owner/name" format
+  htmlUrl    String    @unique
+  configYaml String?   @db.Text // .vertice-bot.yml configuration
+  isActive   Boolean   @default(true)
+  webhookId  Int?      // GitHub webhook ID
+  lastSyncAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  configurations BotConfiguration[]
+  issues         IssueAnalysis[]
+  pullRequests   PRAnalysis[]
+
+  @@index([fullName])
+  @@index([isActive])
+  @@map("repositories")
+}
+
+// Bot configuration per repository with constitutional enforcement
+model BotConfiguration {
+  id           String @id @default(cuid())
+  repositoryId String
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  // Feature flags
+  enableIssueTriage Boolean @default(true)
+  enablePRReview    Boolean @default(true)
+  enableReleaseNotes Boolean @default(true)
+  enableDocGen      Boolean @default(false)
+  enableMergeQueue  Boolean @default(false)
+
+  // Constitutional settings (enforced by DETER-AGENT Layer 1)
+  requiredCRS       Float @default(95.0)  // Minimum CRS required
+  maxLEI            Float @default(1.0)   // Maximum LEI allowed
+  minCoverage       Float @default(90.0)  // Minimum test coverage
+  maxProcessingTime Int   @default(300)   // Maximum processing time (seconds)
+
+  // Gemini AI settings
+  geminiModel       String @default("gemini-1.5-flash")
+  geminiTemperature Float  @default(0.7)
+  contextWindow     Int    @default(100000)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([repositoryId])
+  @@index([enableIssueTriage, enablePRReview])
+  @@map("bot_configurations")
+}
+
+// Issue analysis results with constitutional compliance tracking
+model IssueAnalysis {
+  id           String @id @default(cuid())
+  repositoryId String
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  issueNumber Int
+  title       String
+  body        String @db.Text
+  author      String
+
+  // AI Analysis Results
+  classification  String   // "bug" | "feature" | "question" | "documentation"
+  priority        String   // "critical" | "high" | "medium" | "low"
+  suggestedLabels String[] // Array of suggested label names
+  summary         String?  @db.Text
+
+  // Constitutional Metrics (DETER-AGENT Layer 5: Incentive)
+  analysisLEI Float @default(0.0) // Lazy Execution Index for this analysis
+  analysisCRS Float @default(100.0) // Constitutional Rule Satisfaction
+  confidence  Float @default(0.0) // AI confidence score (0-1)
+
+  // Processing metadata
+  processedByModel String @default("gemini-1.5-flash")
+  processingTimeMs Int    // Time taken to process (milliseconds)
+  errorMessage     String?
+
+  isProcessed      Boolean @default(false)
+  processingResult String  @default("pending") // "success" | "failed" | "pending"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([repositoryId, issueNumber])
+  @@index([isProcessed, classification])
+  @@index([createdAt])
+  @@map("issue_analyses")
+}
+
+// Pull request analysis with comprehensive code review data
+model PRAnalysis {
+  id           String @id @default(cuid())
+  repositoryId String
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  prNumber     Int
+  title        String
+  body         String? @db.Text
+  author       String
+  filesChanged Int
+  additions    Int
+  deletions    Int
+
+  // AI Analysis Results
+  qualityScore   Float    @default(0.0) // Overall quality score (0-100)
+  securityIssues String[] // List of security issues found
+  suggestions    String[] @db.Text // Array of improvement suggestions
+  summary        String?  @db.Text
+
+  // Constitutional Metrics (DETER-AGENT Layer 5: Incentive)
+  reviewLEI  Float @default(0.0) // Lazy Execution Index for this review
+  reviewCRS  Float @default(100.0) // Constitutional Rule Satisfaction
+  confidence Float @default(0.0) // AI confidence score (0-1)
+
+  // Processing metadata
+  processedByModel String @default("gemini-1.5-pro")
+  processingTimeMs Int    // Time taken to process (milliseconds)
+  errorMessage     String?
+
+  isProcessed     Boolean @default(false)
+  processingResult String  @default("pending") // "success" | "failed" | "pending"
+  reviewCommentId Int?    // GitHub comment ID if review was posted
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([repositoryId, prNumber])
+  @@index([isProcessed, qualityScore])
+  @@index([createdAt])
+  @@map("pr_analyses")
+}
+
+// Constitutional compliance audit log (DETER-AGENT Layer 1: Constitutional)
+model ConstitutionalComplianceLog {
+  id           String @id @default(cuid())
+  eventType    String // "issue_triage" | "pr_review" | "webhook" | "system"
+  resourceType String // "issue" | "pr" | "webhook" | "system"
+  resourceId   String
+
+  // Constitutional Metrics
+  crs Float // Constitutional Rule Satisfaction (0-100%)
+  lei Float // Lazy Execution Index
+  fpc Float // Feature Parity Completeness (0-100%)
+
+  violations   String[] @db.Text // List of constitutional violations detected
+  layersFailing String[] @db.Text // DETER-AGENT layers that failed validation
+
+  actionTaken              String  @db.Text // Action taken in response to violation
+  humanInterventionRequired Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([resourceType, resourceId])
+  @@index([humanInterventionRequired])
+  @@index([createdAt])
+  @@map("constitutional_compliance_logs")
+}
+
+// Job queue for async processing (Bull integration)
+model JobQueue {
+  id      String @id @default(cuid())
+  jobType String // "issue_triage" | "pr_review" | "release_notes" | etc.
+  data    Json   // Job payload
+
+  priority    Int @default(0) // Higher number = higher priority
+  status      String @default("queued") // "queued" | "processing" | "completed" | "failed"
+  attempts    Int    @default(0)
+  maxAttempts Int    @default(3)
+
+  result       Json?
+  errorMessage String? @db.Text
+
+  scheduledFor DateTime @default(now())
+  startedAt    DateTime?
+  completedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, scheduledFor])
+  @@index([jobType, status])
+  @@map("job_queues")
+}

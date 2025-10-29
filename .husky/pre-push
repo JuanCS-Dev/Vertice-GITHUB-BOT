@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔒 Constitutional Guard: Pre-push validation..."
+
+# Constitutional Compliance: LEI Check
+echo "📊 Checking LEI (Lazy Execution Index)..."
+pnpm lei:check
+
+if [ $? -ne 0 ]; then
+  echo "❌ LEI validation failed (must be < 1.0). Push blocked by Constitutional Guard."
+  exit 1
+fi
+
+# Constitutional Compliance: Test Coverage
+echo "🧪 Running tests with coverage..."
+pnpm test:cov
+
+if [ $? -ne 0 ]; then
+  echo "❌ Tests or coverage failed (must be ≥ 90%). Push blocked by Constitutional Guard."
+  exit 1
+fi
+
+echo "✅ Pre-push constitutional validation passed. Push allowed."

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Constitutional Compliance: Lint-staged validation
+pnpm lint-staged
+
+# Constitutional Compliance: Type checking
+echo "🔍 Running TypeScript type checking..."
+pnpm type-check
+
+if [ $? -ne 0 ]; then
+  echo "❌ Type checking failed. Commit blocked by Constitutional Guard."
+  exit 1
+fi
+
+echo "✅ Pre-commit validation passed."
