@@ -37,7 +37,9 @@ export class ConstitutionalGuard implements CanActivate {
   constructor(
     private readonly constitutionalService: ConstitutionalService,
     private readonly reflector: Reflector,
-  ) {}
+  ) {
+    // NestJS dependency injection
+  }
 
   /**
    * Validate request against constitutional requirements

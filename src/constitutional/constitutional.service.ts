@@ -67,7 +67,9 @@ export class ConstitutionalService {
     private readonly crsCalculator: CRSCalculatorService,
     private readonly fpcCalculator: FPCCalculatorService,
     private readonly deterAgent: DeterAgentOrchestrator,
-  ) {}
+  ) {
+    // NestJS dependency injection
+  }
 
   /**
    * Validate webhook request with full constitutional compliance

@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConstitutionalModule } from './constitutional/constitutional.module';
 import { ConstitutionalGuard } from './constitutional/constitutional.guard';
 import { HealthModule } from './health/health.module';
+import { ObservabilityModule } from './observability/observability.module';
 
 import { validateEnvironment } from './config/env.validation';
 
@@ -45,6 +46,7 @@ import { validateEnvironment } from './config/env.validation';
 
     PrismaModule,
     ConstitutionalModule,
+    ObservabilityModule,
     HealthModule,
   ],
 

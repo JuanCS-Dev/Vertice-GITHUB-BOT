@@ -74,7 +74,9 @@ export class DeterAgentOrchestrator {
     private readonly stateLayer: StateManagementLayer,
     private readonly executionLayer: ExecutionLayer,
     private readonly incentiveLayer: IncentiveLayer,
-  ) {}
+  ) {
+    // NestJS dependency injection
+  }
 
   /**
    * Execute complete DETER-AGENT workflow

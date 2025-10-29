@@ -3,11 +3,13 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { json, urlencoded } from 'express';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   HttpExceptionFilter,
   AllExceptionsFilter,
 } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { MetricsInterceptor } from './observability/interceptors/metrics.interceptor';
 
 /**
  * Bootstrap Application
@@ -29,13 +31,19 @@ async function bootstrap(): Promise<void> {
     rawBody: true,
   });
 
+  // Replace default logger with Winston
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
   const configService = app.get(ConfigService);
 
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   app.useGlobalFilters(new AllExceptionsFilter(), new HttpExceptionFilter());
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    app.get(MetricsInterceptor),
+  );
 
   app.useGlobalPipes(
     new ValidationPipe({

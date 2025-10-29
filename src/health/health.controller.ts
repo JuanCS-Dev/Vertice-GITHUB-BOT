@@ -21,7 +21,9 @@ import { SkipConstitutionalCheck } from '../constitutional/constitutional.guard'
 export class HealthController {
   private readonly logger = new Logger(HealthController.name);
 
-  constructor(private readonly healthService: HealthService) {}
+  constructor(private readonly healthService: HealthService) {
+    // NestJS dependency injection
+  }
 
   /**
    * Overall health check
