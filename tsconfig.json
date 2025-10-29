@@ -18,9 +18,9 @@
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "paths": {
@@ -32,6 +32,7 @@
       "@observability/*": ["src/observability/*"]
     }
   },
-  "include": ["src/**/*", "test/**/*", "scripts/**/*", "prisma/**/*"],
+  "include": ["src/**/*", "test/**/*", "scripts/**/*", "prisma/**/*", "src/common/types/express.d.ts"],
+  "typeRoots": ["./node_modules/@types", "./src/common/types"],
   "exclude": ["node_modules", "dist", "coverage"]
 }

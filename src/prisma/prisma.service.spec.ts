@@ -121,7 +121,7 @@ describe('PrismaService', () => {
 
       await service.enableShutdownHooks(mockApp);
 
-      expect(service['_emitter']).toBeDefined();
+      expect((service as any)['_emitter']).toBeDefined();
     });
   });
 

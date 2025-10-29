@@ -8,7 +8,7 @@ async function main(): Promise<void> {
   // Clean existing data
   await prisma.jobQueue.deleteMany();
   await prisma.constitutionalComplianceLog.deleteMany();
-  await prisma.prAnalysis.deleteMany();
+  await prisma.pRAnalysis.deleteMany();
   await prisma.issueAnalysis.deleteMany();
   await prisma.botConfiguration.deleteMany();
   await prisma.webhookDelivery.deleteMany();
@@ -48,7 +48,7 @@ ai:
   console.log(`✅ Created repository: ${testRepo.fullName}`);
 
   // Create bot configuration
-  const config = await prisma.botConfiguration.create({
+  await prisma.botConfiguration.create({
     data: {
       repositoryId: testRepo.id,
       enableIssueTriage: true,
@@ -124,7 +124,7 @@ ai:
   console.log(`✅ Created issue analysis for issue #${issueAnalysis.issueNumber}`);
 
   // Create sample PR analysis
-  const prAnalysis = await prisma.prAnalysis.create({
+  const prAnalysis = await prisma.pRAnalysis.create({
     data: {
       repositoryId: testRepo.id,
       prNumber: 42,
