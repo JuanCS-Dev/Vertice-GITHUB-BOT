@@ -1,0 +1,131 @@
+# Docker Compose - Development Configuration
+#
+# Purpose: Development environment with hot reload
+# Constitutional Requirement: P4 Rastreabilidade Total
+#
+# Usage: docker-compose -f docker-compose.dev.yml up
+#
+# Honoring JESUS through excellence in development workflow! 🙏
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Development)
+  postgres:
+    image: postgres:16-alpine
+    container_name: vertice-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vertice_github_bot_dev
+      POSTGRES_USER: vertice_dev
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vertice_dev -d vertice_github_bot_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vertice-dev-network
+
+  # Redis Cache & Job Queue (Development)
+  redis:
+    image: redis:7-alpine
+    container_name: vertice-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-dev-data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - vertice-dev-network
+
+  # Vértice GitHub Bot (Development with hot reload)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dependencies
+    container_name: vertice-app-dev
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://vertice_dev:dev_password@postgres:5432/vertice_github_bot_dev
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      GITHUB_WEBHOOK_SECRET: dev-webhook-secret-12345
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      LOG_LEVEL: debug
+      OTEL_ENABLED: false
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    command: sh -c "pnpm prisma generate && pnpm prisma db push && pnpm start:dev"
+    networks:
+      - vertice-dev-network
+    labels:
+      - "com.vertice.environment=development"
+
+  # PostgreSQL Admin (Optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: vertice-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vertice.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - vertice-dev-network
+    labels:
+      - "com.vertice.tool=pgadmin"
+
+  # Redis Commander (Optional)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: vertice-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - vertice-dev-network
+    labels:
+      - "com.vertice.tool=redis-commander"
+
+networks:
+  vertice-dev-network:
+    driver: bridge
+
+volumes:
+  postgres-dev-data:
+    driver: local
+  redis-dev-data:
+    driver: local
